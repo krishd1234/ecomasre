@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Product details - deka clouthess. Add to cart with size options.">
+  <title>Product | deka clouthess</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="banner">Free shipping on orders over ₹1000</div>
+
+  <header class="header">
+    <div class="header-inner container">
+      <a href="index.html" class="logo">deka <span>clouthess</span></a>
+      <nav class="nav-desktop">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="search-toggle" aria-label="Search">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <a href="cart.html" class="cart-toggle cart-count">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="badge" style="display: none;">0</span>
+        </a>
+        <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+    <nav class="nav-mobile">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="search-overlay">
+    <button class="search-close" aria-label="Close">&times;</button>
+    <form action="shop.html" method="get">
+      <input type="search" name="q" placeholder="Search products..." autocomplete="off">
+    </form>
+  </div>
+
+  <main class="product-detail">
+    <div class="container" id="product-container">
+      <p style="text-align: center; padding: 4rem;">Loading...</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><a href="index.html" class="logo" style="color: var(--color-white);">deka <span style="color: var(--color-beige);">clouthess</span></a></div>
+        <div><h4>Shop</h4><ul><li><a href="shop.html?category=men">Men</a></li><li><a href="shop.html?category=women">Women</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">&copy; 2025 deka clouthess.</div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = parseInt(params.get('id'), 10);
+    const product = PRODUCTS.find(p => p.id === id);
+    const container = document.getElementById('product-container');
+
+    if (!product) {
+      container.innerHTML = '<p style="text-align: center; padding: 4rem;">Product not found. <a href="shop.html">Back to Shop</a></p>';
+    } else {
+      document.title = `${product.name} | deka clouthess`;
+
+      container.innerHTML = `
+        <div class="product-detail-grid">
+          <div class="product-gallery">
+            <div class="product-gallery-main">
+              <img src="${product.image}" alt="${product.name}" id="main-img">
+            </div>
+            <div class="product-gallery-thumbs">
+              <img src="${product.image}" alt="Thumb" class="active" data-src="${product.image}">
+            </div>
+          </div>
+          <div class="product-detail-info">
+            ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+            <h1>${product.name}</h1>
+            <p class="product-detail-price">
+              ${product.originalPrice ? `<span class="original" style="text-decoration: line-through; color: var(--color-text-muted); margin-right: 0.5rem;">₹${product.originalPrice}</span>` : ''}
+              ₹${product.price}
+            </p>
+            <p class="product-description">
+              Crafted with premium materials for lasting comfort. This piece embodies the deka clouthess philosophy of minimalist design and timeless appeal. Perfect for everyday wear, layered or styled on its own.
+            </p>
+            <form class="add-to-cart-form" id="add-to-cart-form">
+              <div class="size-options">
+                <h4>Size</h4>
+                <div class="size-buttons">
+                  ${SIZES.map(s => `<button type="button" class="size-btn" data-size="${s}">${s}</button>`).join('')}
+                </div>
+                <input type="hidden" name="size" id="selected-size" required>
+              </div>
+              <div class="quantity-input">
+                <button type="button" id="qty-minus">−</button>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" max="10">
+                <button type="button" id="qty-plus">+</button>
+              </div>
+              <button type="submit" class="btn" style="flex: 1;">Add to Cart</button>
+            </form>
+          </div>
+        </div>
+      `;
+
+      const sizeBtns = container.querySelectorAll('.size-btn');
+      const sizeInput = document.getElementById('selected-size');
+      sizeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sizeBtns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          sizeInput.value = btn.dataset.size;
+        });
+      });
+
+      const qtyInput = document.getElementById('quantity');
+      document.getElementById('qty-minus').addEventListener('click', () => {
+        const v = Math.max(1, parseInt(qtyInput.value, 10) - 1);
+        qtyInput.value = v;
+      });
+      document.getElementById('qty-plus').addEventListener('click', () => {
+        const v = Math.min(10, parseInt(qtyInput.value, 10) + 1);
+        qtyInput.value = v;
+      });
+
+      document.getElementById('add-to-cart-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const size = sizeInput.value;
+        if (!size) {
+          alert('Please select a size');
+          return;
+        }
+        const qty = parseInt(qtyInput.value, 10);
+        if (typeof addToCart === 'function') {
+          addToCart(product.id, size, qty);
+          alert('Added to cart!');
+          window.location.href = 'cart.html';
+        }
+      });
+    }
+
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMobile = document.querySelector('.nav-mobile');
+    if (menuToggle && navMobile) {
+      menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navMobile.classList.toggle('active');
+      });
+    }
+  </script>
+</body>
+</html>
